@@ -171,7 +171,7 @@ function Menu:open(items, tag_followed, fmt, preselect)
     end
   else
     for i, item in self.display_items:ipairs() do
-      display_lines[i] = string.format("%s %s", tags[i], fmt and fmt(item) or item)
+      display_lines[i] = string.format("%s %s:%s", tags[i], i, fmt and fmt(item) or item)
       if #display_lines[i] > widest_line_width then
         widest_line_width = #display_lines[i]
       end
@@ -282,7 +282,7 @@ function Menu:get_window_opts(height, width)
   local max_width = vim.o.columns
 
   if pos == "topleft" then
-    row, col = 0, 0
+    row, col = 1, 0
     anchor = "NW"
   elseif pos == "topright" then
     row, col = 0, max_width
