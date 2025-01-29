@@ -280,9 +280,10 @@ function Menu:get_window_opts(height, width)
 
   local max_height = H.window_get_max_height()
   local max_width = vim.o.columns
+  local get_neotree_width = H.get_neotree_width()
 
   if pos == "topleft" then
-    row, col = 1, 0
+    row, col = 1, 1 + get_neotree_width
     anchor = "NW"
   elseif pos == "topright" then
     row, col = 0, max_width
@@ -387,6 +388,24 @@ H.window_get_max_height = function()
   -- Remove 2 from maximum height to account for top and bottom borders
   return vim.o.lines - vim.o.cmdheight - (has_tabline and 1 or 0) - (has_statusline and 1 or 0) - 2
 end
+
+
+-- 合并函数：直接获取 neo-tree 窗口宽度（若存在）
+H.get_neotree_width = function()
+  -- 遍历所有窗口，识别 neo-tree 特征
+  for _, win_id in ipairs(vim.api.nvim_list_wins()) do
+    local buf_id = vim.api.nvim_win_get_buf(win_id)
+    local buf_name = vim.api.nvim_buf_get_name(buf_id)
+    local filetype = vim.api.nvim_buf_get_option(buf_id, "filetype")
+    -- 判断是否为 neo-tree 窗口
+    if string.find(buf_name, "NeoTree") or filetype == "neo-tree" then
+      return vim.api.nvim_win_get_width(win_id)  -- 直接返回宽度
+    end
+  end
+  return 0
+end
+
+
 
 H.create_default_hl = function()
   H.highlight_ns = vim.api.nvim_create_namespace("")
